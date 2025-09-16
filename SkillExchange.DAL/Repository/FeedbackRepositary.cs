@@ -12,13 +12,16 @@ namespace SkillExchange.DAL.Repository
     public class FeedbackRepositary : IFeedback
     {
         private readonly AppDbContext _context;
+        public FeedbackRepositary(AppDbContext context)
+        {
+            _context = context;
+        }
 
         public void Add(Feedback feedback)
         {
           _context.Feedbacks.Add(feedback);
             _context.SaveChanges();
         }
-
         public void Delete(int id)
         {
             var entity = _context.Feedbacks.Find(id);
