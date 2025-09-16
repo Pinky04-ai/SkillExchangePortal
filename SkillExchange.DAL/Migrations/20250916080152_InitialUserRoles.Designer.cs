@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SkillExchange.DAL.Database;
 
@@ -11,9 +12,11 @@ using SkillExchange.DAL.Database;
 namespace SkillExchange.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250916080152_InitialUserRoles")]
+    partial class InitialUserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,7 +65,7 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6248),
+                            CreatedAt = new DateTime(2025, 9, 16, 8, 1, 51, 997, DateTimeKind.Utc).AddTicks(3766),
                             Email = "admin@skillportal.com",
                             FullName = "Admin User",
                             Password = "hashed_admin_pw",
@@ -71,7 +74,7 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6250),
+                            CreatedAt = new DateTime(2025, 9, 16, 8, 1, 51, 997, DateTimeKind.Utc).AddTicks(3768),
                             Email = "john@skillportal.com",
                             FullName = "John Doe",
                             Password = "hashed_john_pw",
@@ -80,7 +83,7 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6252),
+                            CreatedAt = new DateTime(2025, 9, 16, 8, 1, 51, 997, DateTimeKind.Utc).AddTicks(3769),
                             Email = "jane@skillportal.com",
                             FullName = "Jane Smith",
                             Password = "hashed_jane_pw",
@@ -104,23 +107,6 @@ namespace SkillExchange.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Programming"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Design"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Music"
-                        });
                 });
 
             modelBuilder.Entity("SkillExchange.DAL.Entities.ContentItem", b =>
@@ -162,30 +148,6 @@ namespace SkillExchange.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ContentItems");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6371),
-                            FileUrl = "C:\\Users\\ASUS\\Documents\\Internship\\SKILL EXCHANGE PORTAL\\SkillExchangePortal\\SkillExchange.DAL\\Files\\lecture1424354156.pdf",
-                            Status = 1,
-                            Title = "Learn C# Basics",
-                            UpdatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6372),
-                            UserId = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6375),
-                            FileUrl = "C:\\Users\\ASUS\\Documents\\Internship\\SKILL EXCHANGE PORTAL\\SkillExchangePortal\\SkillExchange.DAL\\Files\\09-UX.pdf",
-                            Status = 0,
-                            Title = "UI/UX Design Principles",
-                            UpdatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6376),
-                            UserId = 3
-                        });
                 });
 
             modelBuilder.Entity("SkillExchange.DAL.Entities.Feedback", b =>
@@ -219,26 +181,6 @@ namespace SkillExchange.DAL.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Feedbacks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Comment = "Good content!",
-                            ContentId = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6395),
-                            Rating = 4,
-                            UserId = 3
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Comment = "Not a better content!",
-                            ContentId = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6398),
-                            Rating = 3,
-                            UserId = 2
-                        });
                 });
 
             modelBuilder.Entity("SkillExchange.DAL.Entities.Message", b =>
@@ -288,28 +230,6 @@ namespace SkillExchange.DAL.Migrations
                     b.HasIndex("ToUserId");
 
                     b.ToTable("Messages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Content = "Hello Jane! Welcome to the portal.",
-                            FromUserId = 2,
-                            IsRead = false,
-                            SentAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6419),
-                            Status = 0,
-                            ToUserId = 3
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Content = "Hi John, thank you!",
-                            FromUserId = 3,
-                            IsRead = true,
-                            SentAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6422),
-                            Status = 2,
-                            ToUserId = 2
-                        });
                 });
 
             modelBuilder.Entity("SkillExchange.DAL.Entities.Role", b =>
@@ -339,14 +259,14 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6099),
+                            CreatedAt = new DateTime(2025, 9, 16, 8, 1, 51, 997, DateTimeKind.Utc).AddTicks(3661),
                             RoleName = "Admin",
                             RoleType = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6101),
+                            CreatedAt = new DateTime(2025, 9, 16, 8, 1, 51, 997, DateTimeKind.Utc).AddTicks(3663),
                             RoleName = "User",
                             RoleType = 2
                         });

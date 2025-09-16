@@ -10,7 +10,11 @@ namespace SkillExchange.DAL.Entities
     public class Category
     {
         public int Id { get; set; }
+        [Required]
+        [MaxLength(100)]
+        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Category name can only contain letters, numbers, and spaces.")]
         public string Name { get; set; }
-        public ICollection<ContentItem> Contents { get; set; } 
+        public ICollection<ContentItem> Contents { get; set; }
     }
+
 }
