@@ -17,36 +17,36 @@ namespace SkillExchange.DAL.Repository
         {
             _context = context;
         }
-        public void Add(Category entity)
+        public async Task AddAsync(Category entity)
         {
             _context.Categories.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
-        public void Delete (int id)
+        public async Task DeleteAsync(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = await _context.Categories.FindAsync(id);
             if(category != null)
             {
                 _context.Categories.Remove(category);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
-        public void Update(Category entity)
+        public async Task UpdateAsync(Category entity)
         {
             _context.Categories.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
-        public IEnumerable<Category> GetAll()
+        public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return _context.Categories.Include(c => c.Contents).ToList();
+            return await _context.Categories.Include(c => c.Contents).ToListAsync();
         }
-        public Category GetById(int id)
+        public async Task<Category?> GetByIdAsync(int id)
         {
-            return _context.Categories.Include(c => c.Contents).FirstOrDefault(c => c.Id == id);
+            return await _context.Categories.Include(c => c.Contents).FirstOrDefaultAsync(c => c.Id == id);
         }
-        public Category? GetByName(string name)
+        public async Task<Category?> GetByNameAsync(string name)
         {
-            return _context.Categories.FirstOrDefault(c => c.Name == name);
+            return await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
         }
     }
 }

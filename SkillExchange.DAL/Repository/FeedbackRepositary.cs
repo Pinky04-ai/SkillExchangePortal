@@ -3,6 +3,7 @@ using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,36 +17,33 @@ namespace SkillExchange.DAL.Repository
         {
             _context = context;
         }
-
-        public void Add(Feedback feedback)
+        public async Task AddAsync(Feedback feedback)
         {
-          _context.Feedbacks.Add(feedback);
-            _context.SaveChanges();
+            _context.Feedbacks.Add(feedback);
+            await _context.SaveChangesAsync();
         }
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var entity = _context.Feedbacks.Find(id);
+            var entity = await _context.Feedbacks.FindAsync(id);
             if (entity != null)
             {
                 _context.Feedbacks.Remove(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
-
-        public IEnumerable<Feedback> GetAllByContent(int contentId)
+        public async Task<IEnumerable<Feedback>> GetAllByContentAsync(int contentId)
         {
-           return _context.Feedbacks.Where(f => f.ContentId == contentId).ToList();
+            return await _context.Feedbacks.Where(f => f.ContentId == contentId).ToListAsync();
         }
-
-        public Feedback? GetById(int id)
+        
+        public async Task<Feedback?> GetByIdAsync(int id)
         {
-            return _context.Feedbacks.FirstOrDefault(f => f.Id == id);  
+            return await _context.Feedbacks.FirstOrDefaultAsync(f => f.Id == id);  
         }
-
-        public void Update(Feedback feedback)
+        public async Task UpdateAsync(Feedback feedback)
         {
           _context.Feedbacks.Update(feedback);
-            _context.SaveChanges();
+          await _context.SaveChangesAsync();
         }
     }
 }

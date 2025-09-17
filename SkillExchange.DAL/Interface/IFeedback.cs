@@ -9,11 +9,11 @@ namespace SkillExchange.DAL.Interface
 {
     public interface IFeedback
     {
-        Feedback? GetById(int id);
-        IEnumerable<Feedback> GetAllByContent(int contentId);
-        void Add(Feedback feedback);
-        void Update(Feedback feedback);
-        void Delete(int id);
+        Task<Feedback?> GetByIdAsync(int id);
+        Task<IEnumerable<Feedback>> GetAllByContentAsync(int contentId);
 
+        Task AddAsync(Feedback feedback);
+        Task UpdateAsync(Feedback feedback);
+        Task DeleteAsync(int id);
     }
 }

@@ -19,6 +19,7 @@ namespace SkillExchange.DAL.Entities
         [Required]
         [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
         public string? Title { get; set; }
+        public string? Description { get; set; }
         [Required]
         [Url(ErrorMessage = "File URL must be a valid URL.")]
         public string? FileUrl { get; set; }
@@ -32,6 +33,7 @@ namespace SkillExchange.DAL.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         [Required]
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public double? Stars {  get; set; }
         public AppUser? User { get; set; }
         public Category? Category { get; set; }
         public ICollection<Feedback> Feedbacks { get; set; }

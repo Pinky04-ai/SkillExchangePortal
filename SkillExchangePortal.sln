@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillExchange.API", "SkillE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillExchange.DAL", "SkillExchange.DAL\SkillExchange.DAL.csproj", "{93D2B099-A898-4F21-BAAC-7CD6FA7E7D86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkillExchange.BAL", "SkillExchange.BAL\SkillExchange.BAL.csproj", "{82DEBA67-5F26-471B-8FB7-69818A45D2F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{93D2B099-A898-4F21-BAAC-7CD6FA7E7D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93D2B099-A898-4F21-BAAC-7CD6FA7E7D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93D2B099-A898-4F21-BAAC-7CD6FA7E7D86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82DEBA67-5F26-471B-8FB7-69818A45D2F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82DEBA67-5F26-471B-8FB7-69818A45D2F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82DEBA67-5F26-471B-8FB7-69818A45D2F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82DEBA67-5F26-471B-8FB7-69818A45D2F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

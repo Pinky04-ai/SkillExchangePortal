@@ -10,11 +10,11 @@ namespace SkillExchange.DAL.Interface
 {
     public interface ICategory 
     {
-        Category?GetByName(string name);
-        Category?GetById(int id);
-        IEnumerable<Category> GetAll();
-        void Add(Category category);
-        void Update(Category category);
-        void Delete(int id);
+        Task<Category?> GetByNameAsync(string name);
+        Task<Category?> GetByIdAsync(int id);
+        Task<IEnumerable<Category>> GetAllAsync();
+        Task AddAsync(Category category);
+        Task UpdateAsync(Category category);
+        Task DeleteAsync(int id);
     }
 }

@@ -110,7 +110,7 @@ namespace SkillExchange.DAL.Database
                 entity.Property(c => c.UpdatedAt)
                       .IsRequired();
                 entity.HasOne(c => c.User)
-                      .WithMany(u => u.Contents)  
+                      .WithMany(u => u.Contents)
                       .HasForeignKey(c => c.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne(c => c.Category)
@@ -160,9 +160,9 @@ namespace SkillExchange.DAL.Database
                       .IsRequired()
                       .HasDefaultValue(false);
                 entity.HasOne(m => m.FromUser)
-                      .WithMany() 
+                      .WithMany()
                       .HasForeignKey(m => m.FromUserId)
-                      .OnDelete(DeleteBehavior.Restrict); 
+                      .OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(m => m.ToUser)
                       .WithMany()
                       .HasForeignKey(m => m.ToUserId)
@@ -204,7 +204,7 @@ namespace SkillExchange.DAL.Database
             builder.Entity<UserRole>().HasData(
                 new UserRole { UserId = 1, RoleId = 1 },
                 new UserRole { UserId = 2, RoleId = 2 },
-                new UserRole { UserId = 3, RoleId = 2 } 
+                new UserRole { UserId = 3, RoleId = 2 }
             );
             builder.Entity<Category>().HasData(
               new Category { Id = 1, Name = "Programming" },
@@ -278,8 +278,6 @@ namespace SkillExchange.DAL.Database
                 }
             );
         }
-
-
     }
 }
 

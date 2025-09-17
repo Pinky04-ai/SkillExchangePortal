@@ -9,13 +9,14 @@ namespace SkillExchange.DAL.Interface
 {
     public interface IMessage
     {
-        Message?GetById(int id);
-        IEnumerable<Message>GetMessageBetweenUser(int fromUserId, int toUserId);
-        IEnumerable<Message> GetInbox(int userId);
-        IEnumerable<Message>GetSentMessages(int userId);
-        void Add(Message message);
-        void Delete(int id);
-        void MarkAsRead(int messageId);
+        Task<Message?> GetByIdAsync(int id);
+        Task<IEnumerable<Message>> GetMessageBetweenUserAsync(int fromUserId, int toUserId);
+        Task<IEnumerable<Message>> GetInboxAsync(int userId);
+        Task<IEnumerable<Message>> GetSentMessagesAsync(int userId);
+
+        Task AddAsync(Message message);
+        Task DeleteAsync(int id);
+        Task MarkAsReadAsync(int messageId);
 
 
     }

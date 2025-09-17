@@ -2,6 +2,7 @@
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
 using System.Data.Entity;
+using System.Runtime.CompilerServices;
 
 namespace SkillExchange.DAL.Repository
 {
@@ -12,36 +13,36 @@ namespace SkillExchange.DAL.Repository
         {
             _context = context;
         }
-        public void Add(Message message)
+        public async Task AddAsync(Message message)
         {
             _context.Messages.Add(message);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var entity = _context.Messages.Find(id);
+            var entity = await _context.Messages.FindAsync(id);
             if(entity != null)
             {
                 _context.Messages.Remove(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
-        public Message? GetById(int id)
+        public async Task<Message?> GetByIdAsync(int id)
         {
-            return _context.Messages.Include(x => x.FromUser)
+            return await _context.Messages.Include(x => x.FromUser)
                                     .Include(x=>x.ToUser)
-                                    .FirstOrDefault(x => x.Id == id);
+                                    .FirstOrDefaultAsync(x => x.Id == id);
         }
-        public IEnumerable<Message> GetInbox(int userId)
+        public async Task<IEnumerable<Message>> GetInboxAsync(int userId)
         {
-            return _context.Messages.Include(x => x.FromUser)
+            return await _context.Messages.Include(x => x.FromUser)
                                     .Include(x => x.ToUser)
                                     .Where(x => x.ToUserId == userId)
-                                    .OrderByDescending(x => x.SentAt).ToList();
+                                    .OrderByDescending(x => x.SentAt).ToListAsync();
         }
-        public IEnumerable<Message> GetMessageBetweenUser(int fromUserId, int toUserId)
+        public async Task<IEnumerable<Message>> GetMessageBetweenUserAsync(int fromUserId, int toUserId)
         {
-            return _context.Messages
+            return await _context.Messages
                             .Include(m => m.FromUser)
                             .Include(m => m.ToUser)
                             .Where(m =>
@@ -49,24 +50,24 @@ namespace SkillExchange.DAL.Repository
                                 (m.FromUserId == toUserId && m.ToUserId == fromUserId)
                             )
                             .OrderBy(m => m.SentAt)
-                            .ToList();
+                            .ToListAsync();
         }
-        public IEnumerable<Message> GetSentMessages(int userId)
+        public async Task<IEnumerable<Message>> GetSentMessagesAsync(int userId)
         {
-            return _context.Messages
+            return await _context.Messages
                            .Include(m => m.FromUser)
                            .Include(m => m.ToUser)
                            .Where(m => m.FromUserId == userId)
                            .OrderByDescending(m => m.SentAt)
-                           .ToList();
+                           .ToListAsync();
         }
-        public void MarkAsRead(int messageId)
+        public async Task MarkAsReadAsync(int messageId)
         {
-            var message = _context.Messages.FirstOrDefault(m => m.Id == messageId);
+            var message = await _context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
             if (message != null)
             {
                 message.IsRead = true;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

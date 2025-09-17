@@ -62,7 +62,7 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6248),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7734),
                             Email = "admin@skillportal.com",
                             FullName = "Admin User",
                             Password = "hashed_admin_pw",
@@ -71,7 +71,7 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6250),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7737),
                             Email = "john@skillportal.com",
                             FullName = "John Doe",
                             Password = "hashed_john_pw",
@@ -80,7 +80,7 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6252),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7739),
                             Email = "jane@skillportal.com",
                             FullName = "Jane Smith",
                             Password = "hashed_jane_pw",
@@ -137,9 +137,15 @@ namespace SkillExchange.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Stars")
+                        .HasColumnType("float");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -168,22 +174,22 @@ namespace SkillExchange.DAL.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6371),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7867),
                             FileUrl = "C:\\Users\\ASUS\\Documents\\Internship\\SKILL EXCHANGE PORTAL\\SkillExchangePortal\\SkillExchange.DAL\\Files\\lecture1424354156.pdf",
                             Status = 1,
                             Title = "Learn C# Basics",
-                            UpdatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6372),
+                            UpdatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7868),
                             UserId = 2
                         },
                         new
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6375),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7872),
                             FileUrl = "C:\\Users\\ASUS\\Documents\\Internship\\SKILL EXCHANGE PORTAL\\SkillExchangePortal\\SkillExchange.DAL\\Files\\09-UX.pdf",
                             Status = 0,
                             Title = "UI/UX Design Principles",
-                            UpdatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6376),
+                            UpdatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7872),
                             UserId = 3
                         });
                 });
@@ -226,7 +232,7 @@ namespace SkillExchange.DAL.Migrations
                             Id = 1,
                             Comment = "Good content!",
                             ContentId = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6395),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7898),
                             Rating = 4,
                             UserId = 3
                         },
@@ -235,7 +241,7 @@ namespace SkillExchange.DAL.Migrations
                             Id = 2,
                             Comment = "Not a better content!",
                             ContentId = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6398),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7901),
                             Rating = 3,
                             UserId = 2
                         });
@@ -296,7 +302,7 @@ namespace SkillExchange.DAL.Migrations
                             Content = "Hello Jane! Welcome to the portal.",
                             FromUserId = 2,
                             IsRead = false,
-                            SentAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6419),
+                            SentAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7923),
                             Status = 0,
                             ToUserId = 3
                         },
@@ -306,7 +312,7 @@ namespace SkillExchange.DAL.Migrations
                             Content = "Hi John, thank you!",
                             FromUserId = 3,
                             IsRead = true,
-                            SentAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6422),
+                            SentAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7925),
                             Status = 2,
                             ToUserId = 2
                         });
@@ -339,14 +345,14 @@ namespace SkillExchange.DAL.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6099),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7594),
                             RoleName = "Admin",
                             RoleType = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 16, 9, 20, 38, 470, DateTimeKind.Utc).AddTicks(6101),
+                            CreatedAt = new DateTime(2025, 9, 17, 12, 48, 53, 273, DateTimeKind.Utc).AddTicks(7597),
                             RoleName = "User",
                             RoleType = 2
                         });
