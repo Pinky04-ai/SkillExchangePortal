@@ -1,4 +1,5 @@
-﻿using SkillExchange.DAL.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
 using System;
@@ -38,15 +39,15 @@ namespace SkillExchange.DAL.Repository
         }
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return await _context.Categories.Include(c => c.Contents).ToListAsync();
+            return await _context.Categories.FromSqlRaw("EXEC sp_GetAllCategories").ToListAsync();
         }
         public async Task<Category?> GetByIdAsync(int id)
         {
-            return await _context.Categories.Include(c => c.Contents).FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Categories.FromSqlRaw("EXEC sp_GetCategoryById @CategoryId = {0}", id).FirstOrDefaultAsync(c => c.Id == id);
         }
         public async Task<Category?> GetByNameAsync(string name)
         {
-            return await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
+            return await _context.Categories.FromSqlRaw("EXEC sp_GetCategoryByName @Name = {0}", name).FirstOrDefaultAsync(c => c.Name == name);
         }
     }
 }

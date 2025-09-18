@@ -2,6 +2,7 @@
 using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
+using System.Data.SqlClient;
 
 namespace SkillExchange.DAL.Repository
 {
@@ -41,46 +42,45 @@ namespace SkillExchange.DAL.Repository
         }
         public async Task<IEnumerable<ContentItem>> GetAllAsync()
         {
-            return await _context.ContentItems.Include(c => c.User).Include(c => c.Category).Include(c => c.Feedbacks).ToListAsync();
+            return await _context.ContentItems.FromSqlRaw($"EXEC sp_GetAllContentItem").ToListAsync();
         }
         public async Task<IEnumerable<ContentItem>> GetByCategoryAsync(int categoryId, bool onlyApproved = true)
         {
-            var q = _context.ContentItems
-              .Include(c => c.User)
-              .Include(c => c.Category)
-              .Include(c => c.Feedbacks)
-              .Where(c => c.CategoryId == categoryId);
+            var result = await _context.ContentItems
+            .FromSqlRaw("EXEC sp_GetCategoryByAsync @CategoryId = {0}, @OnlyApproved = {1}", categoryId, onlyApproved)
+            .ToListAsync();
 
-            if (onlyApproved)
-                q = q.Where(c => c.Status == Enums.Enum.ContentStatus.Approved);
-
-            return await q.ToListAsync();
+            return result;
 
         }
-
         public async Task<ContentItem?> GetByIdAsync(int id)
         {
-            return await _context.ContentItems.Include(c => c.User)
-                                        .Include(c => c.Category)
-                                        .Include(c => c.Feedbacks)
-                                        .FirstOrDefaultAsync(c => c.Id == id);
+            var result = await _context.ContentItems
+                .FromSqlRaw("EXEC sp_GetContentItemById @ContentItemId = {0}", id)
+                .Include(c => c.Feedbacks) 
+                .FirstOrDefaultAsync();
+
+            return result;
         }
 
         public async Task<IEnumerable<ContentItem>> GetByUserAsync(int userId)
         {
-            return await _context.ContentItems.Include(c => c.Category)
-                                        .Include(c =>c.Feedbacks)
-                                        .Where(c => c.UserId == userId)
-                                        .ToListAsync();
+            var content = await _context.ContentItems
+                     .FromSqlRaw("EXEC sp_GetContentByUser @UserId = {0}", userId)
+                     .Include(c => c.Feedbacks)
+                     .ToListAsync();
+
+            return content;
         }
 
         public async Task<IEnumerable<ContentItem>> GetPendingApprovalAsync()
         {
-            return await _context.ContentItems.Include(c => c.User)
-                                        .Include(c => c.Category)
-                                        .Include(c => c.Feedbacks)
-                                        .Where(c => c.Status == Enums.Enum.ContentStatus.PendingApproval)
-                                        .ToListAsync();
+            var content = await _context.ContentItems
+           .FromSqlRaw("EXEC sp_GetPendingContent")
+           .Include(c => c.Feedbacks) 
+           .ToListAsync();
+
+            return content;
         }
 
         public async Task RejectAsync(int contentId)
@@ -101,50 +101,31 @@ namespace SkillExchange.DAL.Repository
             await _context.SaveChangesAsync();
         }
         public async Task<IEnumerable<ContentItem>> SearchContentsAsync(
-             string? title,
-             int? categoryId,
-             int? minStars = null,
-             int? page = null,
-             int? pageSize = null,
-             bool onlyApproved = true)
+        string? title,
+        int? categoryId,
+        int? minStars = null,
+        bool onlyApproved = true)
         {
-            IQueryable<ContentItem> query = _context.ContentItems
-                .Include(c => c.Category)
-                .Include(c => c.User)
-                .Include(c => c.Feedbacks);
+            var sql = "EXEC sp_SearchContents @Title, @CategoryId, @MinStars, @OnlyApproved";
 
-            if (!string.IsNullOrWhiteSpace(title))
+            var parameters = new[]
             {
-                query = query.Where(c => EF.Functions.Like(c.Title, $"%{title}%"));
-            }
-            if (categoryId.HasValue)
-            {
-                query = query.Where(c => c.CategoryId == categoryId.Value);
-            }
-            if (onlyApproved)
-            {
-                query = query.Where(c => c.Status == Enums.Enum.ContentStatus.Approved);
-            }
-            if (minStars.HasValue)
-            {
-                if (typeof(ContentItem).GetProperty("AverageStars") != null)
-                {
-                    query = query.Where(c => c.Stars.HasValue && c.Stars >= minStars.Value);
-                }
-                else
-                {
-                    query = query.Where(c => c.Feedbacks.Any())
-                                 .Where(c => c.Feedbacks.Average(f => (double?)f.Rating) >= (double)minStars.Value);
-                }
-            }
-            if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
-            {
-                int skip = ((int)page - 1) * (int)pageSize;
-                query = query.Skip(skip).Take((int)pageSize);
-            }
-            var result = await query.ToListAsync();
-            return result;
+            new SqlParameter("@Title", string.IsNullOrWhiteSpace(title) ? (object)DBNull.Value : title),
+            new SqlParameter("@CategoryId", categoryId.HasValue ? (object)categoryId.Value : DBNull.Value),
+            new SqlParameter("@MinStars", minStars.HasValue ? (object)minStars.Value : DBNull.Value),
+            new SqlParameter("@OnlyApproved", onlyApproved)
+        };
+
+            var results = await _context.ContentItems
+                .FromSqlRaw(sql, parameters)
+                .Include(c => c.User)
+                .Include(c => c.Category)
+                .Include(c => c.Feedbacks)
+                .ToListAsync();
+
+            return results;
         }
+
 
     }
 }

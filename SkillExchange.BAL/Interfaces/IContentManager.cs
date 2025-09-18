@@ -10,7 +10,7 @@ namespace SkillExchange.BAL.Interfaces
     public interface IContentManager
     {
         Task<ContentDTO> UploadContentAsync(CreateContentDTO dto, int userId, CreateContentDTO createContentDTO);
-        Task<IEnumerable<ContentListDTO>> SearchContentsAsyncManager(string? title, int? categoryId , int? minStars = null, int? page = null, int? pageSize = null);
+        Task<IEnumerable<ContentListDTO>> SearchContentsAsyncManager(string? title, int? categoryId , int? minStars = null);
         Task<ContentDetailDTO?> GetContentDetailAsync(int id);
         Task ApproveContentAsync(int contentId, bool approve);
         Task<IEnumerable<ContentListDTO>> GetPendingContentsAsync();

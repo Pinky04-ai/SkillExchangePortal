@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SkillExchange.API\SkillExchange.API.csproj" />
     <ProjectReference Include="..\SkillExchange.DAL\SkillExchange.DAL.csproj" />
   </ItemGroup>
 

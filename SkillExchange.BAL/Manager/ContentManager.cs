@@ -1,13 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using SkillExchange.API.DTO.Content;
+﻿using SkillExchange.API.DTO.Content;
 using SkillExchange.BAL.Interfaces;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static SkillExchange.DAL.Enums.Enum;
 
 namespace SkillExchange.BAL.Manager
@@ -69,20 +63,36 @@ namespace SkillExchange.BAL.Manager
             }).ToList();
         }
 
-        public async Task<IEnumerable<ContentListDTO>> SearchContentsAsyncManager(string? title, int? categoryId, int? minStars = null, int? page = null, int? pageSize = null)
+        public Task<IEnumerable<ContentListDTO>> SearchContentsAsyncManager(string? title, int? categoryId, int? minStars = null)
         {
-            var contents = await _contentRepo.SearchContentsAsync(title, categoryId, minStars, page, pageSize, onlyApproved: true);
-
-            return contents.Select(c => new ContentListDTO
-            {
-                Id = c.Id,
-                Title = c.Title ?? string.Empty,
-                Category = c.Category?.Name ?? string.Empty,
-                Rating = c.Stars ?? (c.Feedbacks?.Any() == true ? c.Feedbacks.Average(f => (double)f.Rating) : 0),
-                ReviewsCount = c.Feedbacks?.Count ?? 0,
-                FileUrl = c.FileUrl ?? string.Empty
-            }).ToList();
+            throw new NotImplementedException();
         }
+
+        //public async Task<IEnumerable<ContentDTO>> SearchContentsAsync(
+        // string? title,
+        // int? categoryId,
+        // int? minStars = null,
+        // bool onlyApproved = true)
+        //{
+        //    var contents = await _contentRepo.SearchContentsAsync(title, categoryId, minStars, onlyApproved);
+
+        //    []
+        //    return contents.Select(c => new ContentDTO
+        //    {
+        //        Id = c.Id,
+        //        Title = c.Title,
+        //        Description = c.Description,
+        //        UserId = c.UserId,
+        //        UserName = c.User.FullName,
+        //        CategoryId = c.CategoryId,
+        //        CategoryName = c.Category.Name,
+        //        Stars = c.Stars,
+        //        Status = c.Status,
+        //        CreatedAt = c.CreatedAt,
+        //        FeedbackCount = c.Feedbacks?.Count ?? 0,
+        //        AverageRating = c.Feedbacks?.Any() == true ? c.Feedbacks.Average(f => f.Rating) : 0
+        //    });
+        //}
 
         public async Task<ContentDTO> UploadContentAsync(CreateContentDTO dto, int userId, CreateContentDTO createContentDTO)
         {

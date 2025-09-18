@@ -1,0 +1,8 @@
+﻿CREATE PROCEDURE sp_GetCategoryByName
+@Name NVARCHAR(200)
+AS
+BEGIN 
+SELECT Id , Name
+FROM Category
+WHERE Name=@Name;
+END

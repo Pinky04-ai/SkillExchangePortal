@@ -25,8 +25,6 @@ namespace SkillExchange.DAL.Interface
            string? title,
            int? categoryId,
            int? minStars = null,
-           int? page = null,
-           int? pageSize = null,
            bool onlyApproved = true);
 
     }

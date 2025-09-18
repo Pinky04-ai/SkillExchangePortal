@@ -15,5 +15,6 @@ namespace SkillExchange.DAL.Interface
         Task AddAsync(Feedback feedback);
         Task UpdateAsync(Feedback feedback);
         Task DeleteAsync(int id);
+        Task<IEnumerable<Feedback>> GetAllByUserAsync(int userId);
     }
 }

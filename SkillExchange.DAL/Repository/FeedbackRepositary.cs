@@ -1,9 +1,11 @@
-﻿using SkillExchange.DAL.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+//using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,17 +35,43 @@ namespace SkillExchange.DAL.Repository
         }
         public async Task<IEnumerable<Feedback>> GetAllByContentAsync(int contentId)
         {
-            return await _context.Feedbacks.Where(f => f.ContentId == contentId).ToListAsync();
+            var sql = "EXEC sp_GetFeedbackByContent @ContentId";
+            var param = new SqlParameter("@ContentId", contentId);
+
+            return await _context.Feedbacks
+                .FromSqlRaw(sql, param)
+                .Include(f => f.User) 
+                .ToListAsync();
         }
-        
+
+        public async Task<IEnumerable<Feedback>> GetAllByUserAsync(int userId)
+        {
+            var sql = "EXEC sp_GetFeedbackByUser @UserId";
+            var param = new SqlParameter("@UserId", userId);
+
+            return await _context.Feedbacks
+                .FromSqlRaw(sql, param)
+                .Include(f => f.Content) 
+                .ToListAsync();
+        }
+
         public async Task<Feedback?> GetByIdAsync(int id)
         {
-            return await _context.Feedbacks.FirstOrDefaultAsync(f => f.Id == id);  
+            var sql = "EXEC sp_GetFeedbackById @FeedbackId";
+            var param = new SqlParameter("@FeedbackId", id);
+
+            return await _context.Feedbacks
+                .FromSqlRaw(sql, param)
+                .Include(f => f.User)
+                .Include(f => f.Content)
+                .FirstOrDefaultAsync();
         }
         public async Task UpdateAsync(Feedback feedback)
         {
           _context.Feedbacks.Update(feedback);
           await _context.SaveChangesAsync();
         }
+
+       
     }
 }

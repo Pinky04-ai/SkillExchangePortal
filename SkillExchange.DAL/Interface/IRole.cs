@@ -14,5 +14,7 @@ namespace SkillExchange.DAL.Interface
         Task AddAsync(Role role);
         Task UpdateAsync(Role role);
         Task DeleteAsync(int id);
+        Task<Role?> AssignRoleToUserAsync(int id1, object roleId);
+        Task<Role?> GetByTypeAsync(Enums.Enum.UserRoleType user);
     }
 }

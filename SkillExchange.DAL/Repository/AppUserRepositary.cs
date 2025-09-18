@@ -1,7 +1,10 @@
-﻿using SkillExchange.DAL.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
-using System.Data.Entity;
+//using System.Data.Entity;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.SqlClient;
 using static SkillExchange.DAL.Enums.Enum;
 
 namespace SkillExchange.DAL.Repository
@@ -32,40 +35,34 @@ namespace SkillExchange.DAL.Repository
 
         public async Task<IEnumerable<AppUser>> GetAllAsync()
         {
-            var users = await _context.Users.ToListAsync();
-            foreach (var user in users)
-            {
-                await _context.Entry(user)
-                              .Collection(u => u.UserRoles)
-                              .Query()
-                              .Include(ur => ur.Role)
-                              .LoadAsync();
-            }
+            var sql = "EXEC sp_GetAllUsersWithRoles";
+            var userRolesData = await _context.Users
+                .FromSqlRaw(sql)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ToListAsync();
 
-            return users;
+            return userRolesData;
         }
 
         public async Task<AppUser>? GetByEmailAsync(string email)
         {
-            var user = await _context.Users
-                        .Include(u => u.UserRoles)
-                        .FirstOrDefaultAsync(u => u.Email == email);
-            if (user != null)
-            {
-                await _context.Entry(user)
-                    .Collection(u => u.UserRoles)
-                    .Query()
-                    .Include(ur => ur.Role)
-                    .LoadAsync();
-            }
+            var sql = "EXEC sp_GetUserByEmail @Email";
+            var parameter = new SqlParameter("@Email", email);
 
-            return user;
+            var users = await _context.Users
+                .FromSqlRaw(sql, parameter)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ToListAsync();
+
+            return users.FirstOrDefault();
         }
 
         public async Task<AppUser>? GetByIdAsync(int id)
         {
             return await _context.Users
-             .Include(u => u.UserRoles)         
+             .Include(u => u.UserRoles)
              .Include(u => u.Contents)
              .Include(u => u.Feedbacks)
              .Include(u => u.SentMessages)
@@ -76,14 +73,21 @@ namespace SkillExchange.DAL.Repository
         public async Task<IEnumerable<AppUser>> GetUnverifiedUsersAsync()
         {
             return await _context.Users
-                   .Where(u => u.Status == UserStatus.UnderVerification)
-                   .ToListAsync();
+                        .FromSqlRaw("EXEC sp_GetUnverifiedUsers")
+                        .ToListAsync();
         }
 
         public async Task UpdateAsync(AppUser user)
         {
              _context.Users.Update(user);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UserHasRoleAsync(int userId, UserRoleType role)
+        {
+            return await _context.UserRoles
+                        .Include(ur => ur.Role)
+                        .AnyAsync(ur => ur.UserId == userId && ur.Role.RoleName == role.ToString());
         }
 
         public async Task VerifyUserAsync(int userId)

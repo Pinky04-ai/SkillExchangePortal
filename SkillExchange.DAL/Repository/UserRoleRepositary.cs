@@ -1,12 +1,8 @@
-﻿using SkillExchange.DAL.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 
 namespace SkillExchange.DAL.Repository
 {
@@ -27,22 +23,39 @@ namespace SkillExchange.DAL.Repository
                 await _context.SaveChangesAsync();
             }
         }
-
         public async Task<IEnumerable<UserRole>> GetRolesByUserAsync(int userId)
         {
-            return await _context.UserRoles.Include(u => u.Role).Where(u => u.UserId == userId).ToListAsync();   
-        }
+            var sql = "EXEC sp_GetRolesByUser @UserId";
+            var parameter = new SqlParameter("@UserId", userId);
 
+            return await _context.UserRoles
+                .FromSqlRaw(sql, parameter)
+                .Include(ur => ur.Role)
+                .ToListAsync();
+        }
         public async Task<IEnumerable<UserRole>> GetUsersByRoleAsync(int roleId)
         {
-           return await _context.UserRoles.Include(u=>u.User).Where(u => u.RoleId==roleId).ToListAsync();
+            var sql = "EXEC sp_GetUsersByRoles @RoleId";
+            var parameter = new SqlParameter("@RoleId", roleId);
+            return await _context.UserRoles
+                .FromSqlRaw(sql, parameter)
+                .Include(ur => ur.User) 
+                .ToListAsync();
         }
-
         public async Task<UserRole?> GetUserRoleAsync(int userId, int roleId)
         {
-            return await _context.UserRoles.Include(u => u.Role).Include(u => u.User).FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == roleId);
+            var sql = "EXEC sp_GetUserRole @UserId, @RoleId";
+            var parameters = new[]
+            {
+                new SqlParameter("@UserId", userId),
+                new SqlParameter("@RoleId", roleId)
+            };
+            return await _context.UserRoles
+                .FromSqlRaw(sql, parameters)
+                .Include(ur => ur.User)
+                .Include(ur => ur.Role)
+                .FirstOrDefaultAsync();
         }
-
         public async Task RemoveRoleAsync(int userId, int roleId)
         {
             var userRole = await _context.UserRoles.FirstOrDefaultAsync(u => u.UserId == userId && u.RoleId == roleId);

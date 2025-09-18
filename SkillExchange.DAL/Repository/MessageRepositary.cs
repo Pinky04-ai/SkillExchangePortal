@@ -1,7 +1,9 @@
-﻿using SkillExchange.DAL.Database;
+﻿using Microsoft.EntityFrameworkCore;
+using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
-using System.Data.Entity;
+//using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Runtime.CompilerServices;
 
 namespace SkillExchange.DAL.Repository
@@ -29,37 +31,60 @@ namespace SkillExchange.DAL.Repository
         }
         public async Task<Message?> GetByIdAsync(int id)
         {
-            return await _context.Messages.Include(x => x.FromUser)
-                                    .Include(x=>x.ToUser)
-                                    .FirstOrDefaultAsync(x => x.Id == id);
+            var sql = "EXEC sp_GetMessageById @MessageId";
+            var param = new SqlParameter("@MessageId", id);
+            var result = await _context.Messages
+                .FromSqlRaw(sql, param)
+                .Include(m => m.FromUser)   
+                .Include(m => m.ToUser)
+                .FirstOrDefaultAsync();
+
+            return result;
         }
         public async Task<IEnumerable<Message>> GetInboxAsync(int userId)
         {
-            return await _context.Messages.Include(x => x.FromUser)
-                                    .Include(x => x.ToUser)
-                                    .Where(x => x.ToUserId == userId)
-                                    .OrderByDescending(x => x.SentAt).ToListAsync();
+            var sql = "EXEC sp_GetInboxMessage @UserId";
+            var param = new SqlParameter("@UserId", userId);
+
+            var results = await _context.Messages
+                .FromSqlRaw(sql, param)
+                .Include(m => m.FromUser)
+                .Include(m => m.ToUser)
+                .ToListAsync();
+
+            return results;
         }
         public async Task<IEnumerable<Message>> GetMessageBetweenUserAsync(int fromUserId, int toUserId)
         {
-            return await _context.Messages
-                            .Include(m => m.FromUser)
-                            .Include(m => m.ToUser)
-                            .Where(m =>
-                                (m.FromUserId == fromUserId && m.ToUserId == toUserId) ||
-                                (m.FromUserId == toUserId && m.ToUserId == fromUserId)
-                            )
-                            .OrderBy(m => m.SentAt)
-                            .ToListAsync();
+            var sql = "EXEC sp_GetMessageBetweenUser @FromUserId, @ToUserId";
+
+            var parameters = new[]
+            {
+                new SqlParameter("@FromUserId", fromUserId),
+                new SqlParameter("@ToUserId", toUserId)
+            };
+
+            var results = await _context.Messages
+                .FromSqlRaw(sql, parameters)
+                .Include(m => m.FromUser)
+                .Include(m => m.ToUser)
+                .ToListAsync();
+
+            return results;
         }
         public async Task<IEnumerable<Message>> GetSentMessagesAsync(int userId)
         {
-            return await _context.Messages
-                           .Include(m => m.FromUser)
-                           .Include(m => m.ToUser)
-                           .Where(m => m.FromUserId == userId)
-                           .OrderByDescending(m => m.SentAt)
-                           .ToListAsync();
+            var sql = "EXEC sp_GetSentMessages @UserId";
+
+            var parameter = new SqlParameter("@UserId", userId);
+
+            var results = await _context.Messages
+                .FromSqlRaw(sql, parameter)
+                .Include(m => m.FromUser)
+                .Include(m => m.ToUser)
+                .ToListAsync();
+
+            return results;
         }
         public async Task MarkAsReadAsync(int messageId)
         {
