@@ -21,7 +21,7 @@ namespace SkillExchange.DAL.Repository
             _context.Roles.Add(role);
             await _context.SaveChangesAsync();
         }
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, UserRoleType roleEnum)
         {
             var entity = await _context.Roles.FirstOrDefaultAsync(x => x.Id == id);
             if (entity != null)
@@ -69,7 +69,7 @@ namespace SkillExchange.DAL.Repository
                 .FromSqlRaw(sql, parameter)
                 .FirstOrDefaultAsync();
         }
-        public async Task<Role?> AssignRoleToUserAsync(int userId, object roleId)
+        public async Task<Role?> AssignRoleToUserAsync(int userId, int roleId)
         {
             if (roleId == null) return null;
             int rId = Convert.ToInt32(roleId);
@@ -89,5 +89,6 @@ namespace SkillExchange.DAL.Repository
             return role;
         }
 
+     
     }
 }

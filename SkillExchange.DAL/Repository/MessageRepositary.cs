@@ -2,8 +2,9 @@
 using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
-//using System.Data.Entity;
-using System.Data.SqlClient;
+
+using Microsoft.Data.SqlClient;
+
 using System.Runtime.CompilerServices;
 
 namespace SkillExchange.DAL.Repository
@@ -35,25 +36,28 @@ namespace SkillExchange.DAL.Repository
             var param = new SqlParameter("@MessageId", id);
             var result = await _context.Messages
                 .FromSqlRaw(sql, param)
-                .Include(m => m.FromUser)   
-                .Include(m => m.ToUser)
                 .FirstOrDefaultAsync();
 
             return result;
         }
-        public async Task<IEnumerable<Message>> GetInboxAsync(int userId)
+
+        public Task<IEnumerable<Message>> GetInboxAsync(int userId)
         {
-            var sql = "EXEC sp_GetInboxMessage @UserId";
-            var param = new SqlParameter("@UserId", userId);
-
-            var results = await _context.Messages
-                .FromSqlRaw(sql, param)
-                .Include(m => m.FromUser)
-                .Include(m => m.ToUser)
-                .ToListAsync();
-
-            return results;
+            throw new NotImplementedException();
         }
+
+        //public async Task<IEnumerable<Message>> GetInboxAsync(int userId)
+        //{
+        //    var sql = "EXEC sp_GetInboxMessage @UserId";
+        //    var param = new SqlParameter("@UserId", userId);
+
+        //    var messages = await _context.Set<InboxMessageDTO>()
+        //        .FromSqlRaw(sql, param)
+        //        .AsNoTracking()
+        //        .ToListAsync();
+
+        //    return messages;
+        //}
         public async Task<IEnumerable<Message>> GetMessageBetweenUserAsync(int fromUserId, int toUserId)
         {
             var sql = "EXEC sp_GetMessageBetweenUser @FromUserId, @ToUserId";
@@ -66,8 +70,6 @@ namespace SkillExchange.DAL.Repository
 
             var results = await _context.Messages
                 .FromSqlRaw(sql, parameters)
-                .Include(m => m.FromUser)
-                .Include(m => m.ToUser)
                 .ToListAsync();
 
             return results;
@@ -80,8 +82,6 @@ namespace SkillExchange.DAL.Repository
 
             var results = await _context.Messages
                 .FromSqlRaw(sql, parameter)
-                .Include(m => m.FromUser)
-                .Include(m => m.ToUser)
                 .ToListAsync();
 
             return results;

@@ -110,9 +110,9 @@ namespace SkillExchange.DAL.Repository
 
             var parameters = new[]
             {
-            new SqlParameter("@Title", string.IsNullOrWhiteSpace(title) ? (object)DBNull.Value : title),
-            new SqlParameter("@CategoryId", categoryId.HasValue ? (object)categoryId.Value : DBNull.Value),
-            new SqlParameter("@MinStars", minStars.HasValue ? (object)minStars.Value : DBNull.Value),
+            new SqlParameter("@Title", string.IsNullOrWhiteSpace(title) ? DBNull.Value : title),
+            new SqlParameter("@CategoryId", categoryId.HasValue ? categoryId.Value : DBNull.Value),
+            new SqlParameter("@MinStars", minStars.HasValue ? minStars.Value : DBNull.Value),
             new SqlParameter("@OnlyApproved", onlyApproved)
         };
 

@@ -2,7 +2,6 @@
 AS
 BEGIN
     SET NOCOUNT ON;
-
     SELECT 
         u.Id AS UserId,
         u.FullName,
@@ -13,7 +12,7 @@ BEGIN
         ur.RoleId,
         r.RoleName,
         r.Description AS RoleDescription
-    FROM AppUser u
+    FROM Users u
     LEFT JOIN UserRole ur ON u.Id = ur.UserId
     LEFT JOIN Role r ON ur.RoleId = r.Id
     ORDER BY u.Id;

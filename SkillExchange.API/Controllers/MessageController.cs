@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SkillExchange.API.DTO.Message;
 using SkillExchange.BAL.Interfaces;
-using System.Security.Claims;
+
 namespace SkillExchange.API.Controllers
 {
-    
-    public class MessageController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class MessageController : ControllerBase
     {
         private readonly IMessageManager _messageManager;
 
@@ -14,14 +14,10 @@ namespace SkillExchange.API.Controllers
         {
             _messageManager = messageManager;
         }
-        [HttpPost("send")]
-        public async Task<ActionResult<MessageDTO>> SendMessage([FromBody] SendMessageDTO dto)
+
+        [HttpPost("send/{userId}")]
+        public async Task<ActionResult<MessageDTO>> SendMessage(int userId, [FromBody] SendMessageDTO dto)
         {
-            // Assume we get current logged-in userId (for example from JWT claims)
-            var userId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-
-            if (userId == 0) return Unauthorized("User not logged in.");
-
             try
             {
                 var message = await _messageManager.SendMessageAsync(userId, dto);
@@ -32,40 +28,31 @@ namespace SkillExchange.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("inbox")]
-        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetInbox()
-        {
-            var userId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-            if (userId == 0) return Unauthorized("User not logged in.");
 
+        [HttpGet("inbox/{userId}")]
+        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetInbox(int userId)
+        {
             var messages = await _messageManager.GetInboxAsync(userId);
             return Ok(messages);
         }
 
-        [HttpGet("sent")]
-        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetSentMessages()
+        [HttpGet("sent/{userId}")]
+        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetSentMessages(int userId)
         {
-            var userId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-            if (userId == 0) return Unauthorized("User not logged in.");
-
             var messages = await _messageManager.GetSentAsync(userId);
             return Ok(messages);
         }
-        [HttpGet("conversation/{otherUserId}")]
-        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetConversation(int otherUserId)
-        {
-            var userId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-            if (userId == 0) return Unauthorized("User not logged in.");
 
+        [HttpGet("conversation/{userId}/{otherUserId}")]
+        public async Task<ActionResult<IEnumerable<MessageDTO>>> GetConversation(int userId, int otherUserId)
+        {
             var conversation = await _messageManager.GetConversationAsync(userId, otherUserId);
             return Ok(conversation);
         }
-        [HttpPost("markasread/{messageId}")]
-        public async Task<ActionResult> MarkAsRead(int messageId)
-        {
-            var userId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-            if (userId == 0) return Unauthorized("User not logged in.");
 
+        [HttpPost("markasread/{userId}/{messageId}")]
+        public async Task<ActionResult> MarkAsRead(int userId, int messageId)
+        {
             try
             {
                 await _messageManager.MarkAsReadAsync(userId, messageId);
@@ -76,12 +63,10 @@ namespace SkillExchange.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("{messageId}")]
-        public async Task<ActionResult> DeleteMessage(int messageId)
-        {
-            var userId = int.Parse(User.FindFirst("Id")?.Value ?? "0");
-            if (userId == 0) return Unauthorized("User not logged in.");
 
+        [HttpDelete("{userId}/{messageId}")]
+        public async Task<ActionResult> DeleteMessage(int userId, int messageId)
+        {
             try
             {
                 await _messageManager.DeleteAsync(userId, messageId);
@@ -92,6 +77,5 @@ namespace SkillExchange.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
     }
 }

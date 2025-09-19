@@ -1,16 +1,10 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SkillExchange.BAL.Interfaces;
 using SkillExchange.BAL.Manager;
 using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Interface;
 using SkillExchange.DAL.Repository;
-using System.Text;
-
-
 namespace SkillExchange.API
 {
     public class Program
@@ -18,26 +12,35 @@ namespace SkillExchange.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //var key = Encoding.ASCII.GetBytes("Your_Secret_Key_Here");
-            //builder.Services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //.AddJwtBearer(options =>
-            //{
-            //    options.RequireHttpsMetadata = false;
-            //    options.SaveToken = true;
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuer = false, // or true if you have issuer
-            //        ValidateAudience = false, // or true if you have audience
-            //        ValidateLifetime = true,
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(key)
-            //    };
-            //});
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "SkillExchange API", Version = "v1" });
 
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your token.\r\nExample: \"Bearer abc123xyz\""
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -48,11 +51,16 @@ namespace SkillExchange.API
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IMessageManager, MessageManager>();
             builder.Services.AddScoped<IMessage, MessageRepositary>();
+            builder.Services.AddScoped<IFeedbackManager, FeedbackManager>();
+            builder.Services.AddScoped<IFeedback, FeedbackRepositary>();
             builder.Services.AddScoped<IAppUser, AppUserRepositary>();
+            builder.Services.AddScoped<IUserManager,UserManager>(); 
+            builder.Services.AddScoped<IUserManager, UserManager>();
+            builder.Services.AddScoped<IRole, RoleRepositary>();
+            builder.Services.AddScoped<IRoleManager, RoleManager>();
 
             builder.Services.AddControllers();
             builder.Services.AddAuthorization();
-
 
             var app = builder.Build();
 
@@ -62,11 +70,9 @@ namespace SkillExchange.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             app.UseHttpsRedirection();
-            //app.UseAuthentication();
+            
             app.UseAuthorization();
-
 
             app.MapControllers();
 

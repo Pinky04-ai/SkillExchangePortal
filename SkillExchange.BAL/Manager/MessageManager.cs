@@ -43,9 +43,9 @@ namespace SkillExchange.BAL.Manager
             {
                 Id = m.Id,
                 FromUserId = m.FromUserId,
-                FromUserName = m.FromUser?.FullName ?? "Unknown",
+                FromUserName_FullName = m.FromUser?.FullName ?? "Unknown",
                 ToUserId = m.ToUserId,
-                ToUserName = m.ToUser?.FullName ?? "Unknown",
+                ToUserName_FullName = m.ToUser?.FullName ?? "Unknown",
                 Content = m.Content,
                 IsRead = m.IsRead,
                 SentAt = m.SentAt
@@ -114,9 +114,9 @@ namespace SkillExchange.BAL.Manager
             {
                 Id = messageEntity.Id,
                 FromUserId = sender.Id,
-                FromUserName = sender.FullName,
+                FromUserName_FullName = sender.FullName,
                 ToUserId = recipient.Id,
-                ToUserName = recipient.FullName,
+                ToUserName_FullName = recipient.FullName,
                 Content = messageEntity.Content,
                 IsRead = messageEntity.IsRead,
                 SentAt = messageEntity.SentAt

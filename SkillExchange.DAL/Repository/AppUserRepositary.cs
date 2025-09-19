@@ -4,7 +4,8 @@ using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
 //using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using static SkillExchange.DAL.Enums.Enum;
 
 namespace SkillExchange.DAL.Repository
@@ -45,29 +46,23 @@ namespace SkillExchange.DAL.Repository
             return userRolesData;
         }
 
-        public async Task<AppUser>? GetByEmailAsync(string email)
+        public async Task<AppUser?> GetByEmailAsync(string email)
         {
-            var sql = "EXEC sp_GetUserByEmail @Email";
-            var parameter = new SqlParameter("@Email", email);
-
-            var users = await _context.Users
-                .FromSqlRaw(sql, parameter)
-                .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-                .ToListAsync();
-
-            return users.FirstOrDefault();
+            var param = new SqlParameter("@Email", email);
+            var result =  _context.Users
+                .FromSqlRaw("EXEC sp_GetUserByEmail @Email", param)
+                .AsEnumerable()
+                .FirstOrDefault();
+            return result;
         }
 
         public async Task<AppUser>? GetByIdAsync(int id)
         {
-            return await _context.Users
-             .Include(u => u.UserRoles)
-             .Include(u => u.Contents)
-             .Include(u => u.Feedbacks)
-             .Include(u => u.SentMessages)
-             .Include(u => u.ReceivedMessages)
-             .FirstOrDefaultAsync(u => u.Id == id);
+            var list = _context.Users
+            .FromSqlRaw("EXEC sp_GetUserById @UserId", new SqlParameter("@UserId", id))
+            .AsEnumerable() 
+            .ToList();
+            return list.SingleOrDefault();
         }
 
         public async Task<IEnumerable<AppUser>> GetUnverifiedUsersAsync()

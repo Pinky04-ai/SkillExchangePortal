@@ -43,14 +43,19 @@ namespace SkillExchange.BAL.Manager
             };
         }
 
-        public async Task<bool> DeleteRoleAsync(int id)
+        public Task<bool> DeleteRoleAsync(int id)
         {
-            var role = await _roleRepo.GetByIdAsync(id);
-            if (role == null) return false;
-            await _roleRepo.DeleteAsync(id);
-            return true;
-           
+            throw new NotImplementedException();
         }
+
+        //public async Task<bool> DeleteRoleAsync(int id)
+        //{
+        //    var role = await _roleRepo.GetByIdAsync(id);
+        //    if (role == null) return false;
+        //    await _roleRepo.DeleteAsync(id);
+        //    return true;
+
+        //}
 
         public async Task<IEnumerable<RoleDTO>> GetAllRolesAsync()
         {

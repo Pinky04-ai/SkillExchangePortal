@@ -30,21 +30,23 @@ namespace SkillExchange.BAL.Manager
 
             var feedback = new Feedback
             {
+                UserId = userId,
                 ContentId = dto.ContentId,
                 Rating = (FeedbackRating)dto.FeedbackRating,
                 Comment = dto.Comment,
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
-            await _feedbackRepo.AddAsync(feedback);
+             await _feedbackRepo.AddAsync(feedback);
 
             return new FeedbackDTO
             {
                 Id = feedback.Id,
+                UserId = feedback.UserId,
+                ContentId = feedback.ContentId,
                 Rating = (int)feedback.Rating,
                 Comment = feedback.Comment,
-                UserName = user.FullName
+                CreatedAt = feedback.CreatedAt
             };
         }
 

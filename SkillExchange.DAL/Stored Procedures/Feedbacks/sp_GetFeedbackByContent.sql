@@ -3,18 +3,16 @@
 AS
 BEGIN
     SET NOCOUNT ON;
-
     SELECT f.Id,
-           f.ContentId,
-           f.UserId,
-           f.Rating,
-           f.Comment,
-           f.CreatedAt,
-           u.Id AS UserId,
-           u.Username,
-           u.Email
-    FROM Feedbacks f
-    INNER JOIN Users u ON f.UserId = u.Id
-    WHERE f.ContentId = @ContentId;
-END;
+       f.ContentId,
+       f.UserId,
+       f.Rating,
+       f.Comment,
+       f.CreatedAt,
+       u.Id AS User_Id,
+       u.Email AS User_Email
+FROM Feedbacks f
+INNER JOIN Users u ON f.UserId = u.Id
+WHERE f.ContentId = @ContentId;
+END
 GO

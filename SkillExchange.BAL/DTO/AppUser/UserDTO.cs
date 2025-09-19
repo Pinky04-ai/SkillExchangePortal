@@ -10,5 +10,6 @@ namespace SkillExchange.API.DTO.AppUser
         public bool IsVerified { get; set; }
         public bool IsVerfied {  get; set; }
         public DateTime CreatedAt { get; set; }
+        public IEnumerable<string?>? Roles { get; set; }
     }
 }

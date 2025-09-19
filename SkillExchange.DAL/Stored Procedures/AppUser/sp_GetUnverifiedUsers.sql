@@ -2,7 +2,6 @@
 AS
 BEGIN
     SET NOCOUNT ON;
-
     SELECT 
         u.Id,
         u.UserName,
@@ -10,6 +9,6 @@ BEGIN
         u.CreatedAt,
         u.Status
     FROM Users u
-    WHERE u.Status = 0; -- Assuming UserStatus.UnderVerification = 1
+    WHERE u.Status = 0; 
 END
 GO

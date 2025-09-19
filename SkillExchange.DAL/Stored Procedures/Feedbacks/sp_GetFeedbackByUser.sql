@@ -10,8 +10,6 @@ BEGIN
            f.Rating,
            f.Comment,
            f.CreatedAt,
-           c.Id AS ContentId,
-           c.Title,
            c.Description
     FROM Feedbacks f
     INNER JOIN ContentItems c ON f.ContentId = c.Id

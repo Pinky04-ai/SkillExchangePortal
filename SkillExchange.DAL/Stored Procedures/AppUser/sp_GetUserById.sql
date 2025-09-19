@@ -4,45 +4,67 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    -- 1. AppUser
     SELECT 
-        u.Id AS UserId,
-        u.UserName,
+        u.Id,
         u.Email,
-        u.CreatedAt,
+        u.Password,
+        u.FullName,
+        u.Status,
+        u.CreatedAt
+    FROM Users u
+    WHERE u.Id = @UserId;
 
-        ur.Id AS UserRoleId,
+    -- 2. UserRoles + Roles
+    SELECT 
+        ur.Id,
+        ur.UserId,
         ur.RoleId,
-        r.RoleName,
-        r.Description AS RoleDescription,
+        r.RoleName
+    FROM UserRoles ur
+    INNER JOIN Roles r ON ur.RoleId = r.Id
+    WHERE ur.UserId = @UserId;
 
-        ci.Id AS ContentId,
-        ci.Title AS ContentTitle,
-        ci.Status AS ContentStatus,
-        ci.CreatedAt AS ContentCreatedAt,
+    -- 3. ContentItems
+    SELECT 
+        ci.Id,
+        ci.UserId,
+        ci.Title,
+        ci.Description,
+        ci.Status,
+        ci.CreatedAt
+    FROM ContentItems ci
+    WHERE ci.UserId = @UserId;
 
-        f.Id AS FeedbackId,
-        f.ContentId AS FeedbackContentId,
+    -- 4. Feedbacks
+    SELECT 
+        f.Id,
+        f.UserId,
+        f.ContentId,
         f.Rating,
         f.Comment,
-        f.CreatedAt AS FeedbackCreatedAt,
+        f.CreatedAt
+    FROM Feedbacks f
+    WHERE f.UserId = @UserId;
 
-        sm.Id AS SentMessageId,
-        sm.ToUserId AS SentToUserId,
-        sm.Content AS SentMessageContent,
-        sm.SentAt AS SentAt,
+    -- 5. Sent Messages
+    SELECT 
+        m.Id,
+        m.FromUserId,
+        m.ToUserId,
+        m.Content,
+        m.SentAt
+    FROM Messages m
+    WHERE m.FromUserId = @UserId;
 
-        rm.Id AS ReceivedMessageId,
-        rm.FromUserId AS ReceivedFromUserId,
-        rm.Content AS ReceivedMessageContent,
-        rm.SentAt AS ReceivedAt
-
-    FROM Users u
-    LEFT JOIN UserRole ur ON u.Id = ur.UserId
-    LEFT JOIN Role r ON ur.RoleId = r.Id
-    LEFT JOIN ContentItem ci ON u.Id = ci.UserId
-    LEFT JOIN Feedback f ON u.Id = f.UserId
-    LEFT JOIN Message sm ON u.Id = sm.FromUserId
-    LEFT JOIN Message rm ON u.Id = rm.ToUserId
-    WHERE u.Id = @UserId;
+    -- 6. Received Messages
+    SELECT 
+        m.Id,
+        m.FromUserId,
+        m.ToUserId,
+        m.Content,
+        m.SentAt
+    FROM Messages m
+    WHERE m.ToUserId = @UserId;
 END
 GO

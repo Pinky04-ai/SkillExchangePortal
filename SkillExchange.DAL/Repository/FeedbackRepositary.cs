@@ -1,14 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿//using System.Data.Entity;
+//using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SkillExchange.DAL.Database;
 using SkillExchange.DAL.Entities;
 using SkillExchange.DAL.Interface;
 using System;
 using System.Collections.Generic;
-//using System.Data.Entity;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SkillExchange.DAL.Enums.Enum;
 
 namespace SkillExchange.DAL.Repository
 {
@@ -19,10 +21,11 @@ namespace SkillExchange.DAL.Repository
         {
             _context = context;
         }
-        public async Task AddAsync(Feedback feedback)
+        public async Task<Feedback> AddAsync(Feedback feedback)
         {
             _context.Feedbacks.Add(feedback);
             await _context.SaveChangesAsync();
+            return feedback;
         }
         public async Task DeleteAsync(int id)
         {
@@ -40,7 +43,6 @@ namespace SkillExchange.DAL.Repository
 
             return await _context.Feedbacks
                 .FromSqlRaw(sql, param)
-                .Include(f => f.User) 
                 .ToListAsync();
         }
 
@@ -51,7 +53,6 @@ namespace SkillExchange.DAL.Repository
 
             return await _context.Feedbacks
                 .FromSqlRaw(sql, param)
-                .Include(f => f.Content) 
                 .ToListAsync();
         }
 
@@ -60,11 +61,11 @@ namespace SkillExchange.DAL.Repository
             var sql = "EXEC sp_GetFeedbackById @FeedbackId";
             var param = new SqlParameter("@FeedbackId", id);
 
-            return await _context.Feedbacks
+            var list = await _context.Feedbacks
                 .FromSqlRaw(sql, param)
-                .Include(f => f.User)
-                .Include(f => f.Content)
-                .FirstOrDefaultAsync();
+                .ToListAsync();   
+
+            return list.SingleOrDefault();
         }
         public async Task UpdateAsync(Feedback feedback)
         {
@@ -72,6 +73,9 @@ namespace SkillExchange.DAL.Repository
           await _context.SaveChangesAsync();
         }
 
-       
+        async Task IFeedback.AddAsync(Feedback feedback)
+        {
+           
+        }
     }
 }
