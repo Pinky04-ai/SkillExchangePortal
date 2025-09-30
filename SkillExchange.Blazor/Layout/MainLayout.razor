@@ -1,0 +1,43 @@
+﻿@using SkillExchange.Blazor.Services
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject AuthService Auth
+<div class="page">
+    @if (ShowSideBar)
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+@code{
+    private bool ShowSideBar => ShouldShowSideBar();
+    private bool ShouldShowSideBar()
+    {
+        var uri = Nav.Uri.ToLower();
+        if(uri.Contains("/login") || uri.Contains("/register")|| uri.Contains("/home")||uri.Contains("/adminlogin"))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+        return Auth.isLoggedin;
+    }
+    protected override void OnInitialized()
+    {
+        Auth.OnAuthStateChanged += StateHasChanged;
+        Nav.LocationChanged += (_, __) => StateHasChanged();
+    }
+
+}

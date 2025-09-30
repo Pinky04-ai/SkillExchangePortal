@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "SkillExchange.API\\SkillExchange.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SkillExchange.Blazor\\SkillExchange.Blazor.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -1,0 +1,104 @@
+﻿@page "/adminapproval"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using SkillExchange.Blazor.Services
+@using SkillExchange.Core.DTO
+@using static SkillExchange.Core.Enum.Enum 
+@inject ContentService ContentService
+@inject ContentStateService ContentState
+@inject NavigationManager Nav
+<h3>Admin Approval</h3>
+@if (pendingContents == null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else if (!pendingContents.Any())
+{
+    <p>No pending content.</p>
+}
+else
+{
+    @foreach (var content in pendingContents)
+    {
+        <MudCard Class="mb-4">
+            <MudCardContent>
+                <h4>@content.Title</h4>
+                <p>@content.Description</p>
+                <p><b>Category:</b> @content.CategoryName</p>
+                @if (!string.IsNullOrEmpty(content.ContentType))
+                {
+                    @if (content.ContentType.ToLower() == "image")
+                    {
+                        <MudCardMedia Image="@content.FileUrl" />
+                    }
+                    else if (content.ContentType.ToLower() == "video")
+                    {
+                        <video width="100%" controls>
+                            <source src="@content.FileUrl" type="video/mp4" />
+                        </video>
+                    }
+                }
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="() => ApproveContent(content.Id)">Approve</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="() => RejectContent(content.Id)">Reject</MudButton>
+            </MudCardContent>
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       FullWidth="true"
+                       Size="Size.Medium"
+                       Class="mt-3 rounded-xl"
+                       OnClick="@GoTo">
+                ← Back to Admin Home
+            </MudButton>
+        </MudCard>
+    }
+}
+@code {
+    private List<ContentDTO> pendingContents;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPending();
+    }
+    private async Task LoadPending()
+    {
+        pendingContents = (await ContentService.GetPendingContentsAsync()).ToList();
+    }
+    private async Task ApproveContent(int contentId)
+    {
+        var dto = new UpdateStatusDTO
+        {
+                ContentId = contentId,
+                Status = ContentStatus.Approved
+        };
+        var ok = await ContentService.UpdateStatusAsync(dto);
+        if (ok)
+        {
+            pendingContents = pendingContents.Where(c => c.Id != contentId).ToList();
+            ContentState.NotifyContentApproved();
+        }
+        else
+        {
+
+        }
+    }
+    private async Task RejectContent(int contentId)
+    {
+        var dto = new UpdateStatusDTO
+        {
+            ContentId = contentId,
+            Status = ContentStatus.Rejected
+        };
+        var ok = await ContentService.UpdateStatusAsync(dto);
+        if (ok)
+        {
+            pendingContents = pendingContents.Where(c => c.Id != contentId).ToList();
+        }
+        else
+        {
+            
+        }
+    }
+    private void GoTo()
+    {
+        Nav.NavigateTo("/adminhome");
+    }
+}

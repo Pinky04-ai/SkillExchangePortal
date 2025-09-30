@@ -1,0 +1,26 @@
+﻿@page "/adminhome"
+@attribute [Authorize(Roles = "Admin")]
+@inject NavigationManager Nav
+@using Microsoft.AspNetCore.Authorization
+@using MudBlazor
+<MudStack Spacing="4" AlignItems="AlignItems.Center" JustifyContent="Justify.Center" Style="height:100vh;">
+    <MudText Typo="Typo.h3" Align="Align.Center">
+        Welcome, Admin!
+    </MudText>
+    <MudText Typo="Typo.subtitle1" Align="Align.Center">
+        Choose an action:
+    </MudText>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+               OnClick="@GoToApproveUsers">
+        Approve Users
+    </MudButton>
+    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Large"
+               OnClick="@GoToApproveContent">
+        Approve Content
+    </MudButton>
+    </MudStack>
+@code {
+    private void GoToApproveUsers() => Nav.NavigateTo("/approveuser");
+    private void GoToApproveContent() => Nav.NavigateTo("/adminapproval");
+}
+

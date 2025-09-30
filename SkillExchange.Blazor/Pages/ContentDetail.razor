@@ -1,0 +1,130 @@
+﻿@page "/content/{ContentId:int}"
+@using SkillExchange.Blazor.Models
+@using SkillExchange.Blazor.Services
+@using SkillExchange.Core.DTO
+@inject ContentService ContentService
+@inject AuthService AuthService
+@inject NavigationManager Nav
+<h3 class="page-title">@content?.Title</h3>
+
+@if (content == null)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <MudCard Class="content-detail-card mb-4">
+        @if (!string.IsNullOrEmpty(content.FileUrl))
+        {
+            @switch (content.FileName.ToLower())
+            {
+                case "video":
+                    <video width="100%" controls>
+                        <source src="@content.FileUrl" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                    break;
+
+                case "image":
+                    <img src="@content.FileUrl" alt="@content.Title" class="content-image" style="max-width:100%; height:auto;" />
+                    break;
+
+                case "ppt":
+                    <iframe src="@content.FileUrl" width="100%" height="600px"></iframe>
+                    break;
+
+                default:
+                    <p>Unsupported file type.</p>
+                    break;
+            }
+        }
+        <MudCardContent>
+            <p>@content.Description</p>
+            <p><strong>Category:</strong> @content.CategoryName</p>
+        </MudCardContent>
+    </MudCard>
+    <h4>User Feedback</h4>
+    <EditForm Model="@feedbackModel" OnValidSubmit="SubmitFeedback">
+        <MudTextField @bind-Value="feedbackModel.Comment" Placeholder="Write your feedback..." Required="true" Lines="3" Class="mb-2" />
+        <MudRating @bind-Value="feedbackModel.Rating" MaxValue="5" Required="true" Class="mb-2" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Type="Submit">
+            Submit Feedback
+        </MudButton>
+    </EditForm>
+    @if (!string.IsNullOrEmpty(feedbackMessage))
+    {
+        <MudText Color="@feedbackMessageColor" Class="mt-2 mb-4">@feedbackMessage</MudText>
+    }
+    <h4>All Feedbacks (Admin View)</h4>
+    @if (allFeedbacks == null)
+    {
+        <MudProgressCircular Indeterminate="true" />
+    }
+    else if (!allFeedbacks.Any())
+    {
+        <p>No feedback submitted yet.</p>
+    }
+    else
+    {
+        @foreach (var fb in allFeedbacks)
+        {
+            <MudCard Class="mb-2">
+                <MudCardContent>
+                    <p><b>@fb.UserName</b> rated: @fb.Rating / 5</p>
+                    <p>@fb.Comment</p>
+                    <p><small>@fb.CreatedAt.ToLocalTime()</small></p>
+                </MudCardContent>
+            </MudCard>
+        }
+    }
+}
+
+@code {
+    [Parameter] public int ContentId { get; set; }
+
+    private ContentDTO content;
+    private FeedbackRequestDTO feedbackModel = new();
+    private List<FeedbackDTO> allFeedbacks;
+    private string feedbackMessage;
+    private MudBlazor.Color feedbackMessageColor = MudBlazor.Color.Default;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadContent();
+        await LoadFeedbacks();
+    }
+    private async Task LoadContent()
+    {
+        content = await ContentService.GetContentByIdAsync(ContentId);
+    }
+    private async Task LoadFeedbacks()
+    {
+        allFeedbacks = await ContentService.GetAllFeedbacksForContentAsync(ContentId);
+    }
+    private async Task SubmitFeedback()
+    {
+        if (content != null)
+        {
+            var currentUser = await AuthService.GetCurrentUserAsync();
+            var feedbackDto = new FeedbackRequestDTO
+            {
+                ContentId = content.Id,
+                UserId = currentUser.Id,
+                Comment = feedbackModel.Comment,
+                Rating = feedbackModel.Rating
+            };
+            var success = await ContentService.SubmitFeedbackAsync(feedbackDto);
+            if (success)
+            {
+                await LoadFeedbacks();
+                feedbackModel = new FeedbackRequestDTO();
+                feedbackMessage = "✅ Feedback submitted successfully!";
+                feedbackMessageColor = MudBlazor.Color.Success;
+            }
+            else
+            {
+                feedbackMessage = "❌ Failed to submit feedback.";
+                feedbackMessageColor = MudBlazor.Color.Error;
+            }
+        }
+    }
+}

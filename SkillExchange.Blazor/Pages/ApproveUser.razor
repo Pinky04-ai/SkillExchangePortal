@@ -1,0 +1,64 @@
+﻿@page "/approveuser"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using SkillExchange.Blazor.Models
+@using SkillExchange.Blazor.Services
+@using SkillExchange.Core.DTO
+@inject AuthService Auth
+@inject NavigationManager Nav
+<div class="approve-users-container">
+    <MudPaper Class="approve-users-card">
+        <MudText Typo="Typo.h4" Class="approve-title"> Pending User Approvals</MudText>
+        <MudDivider Class="mb-4" />
+
+        <MudTable Items="pendingUsers" Hover="true" Bordered="true" Striped="true" >
+            <HeaderContent>
+                <MudTh>Email</MudTh>
+                <MudTh>Role</MudTh>
+                <MudTh class="action-column">Action</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.Email</MudTd>
+                <MudTd>@context.Role</MudTd>
+                <MudTd>
+                    <MudButton Color="Color.Success" Size="Size.Small" Variant="Variant.Filled" Class="mx-1"
+                               OnClick="@(() => Approve(context.Id))">
+                         Approve
+                    </MudButton>
+                    <MudButton Color="Color.Error" Size="Size.Small" Variant="Variant.Outlined" Class="mx-1"
+                               OnClick="@(() => Reject(context.Id))">
+                         Reject
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@GoBack">
+            Back To Home
+        </MudButton>
+    </MudPaper>
+</div>
+
+@code {
+    private List<UserDTO> pendingUsers = new();
+    private string statusMessage = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        pendingUsers = await Auth.GetPendingUsers();
+    }
+    private async Task Approve(int userId)
+    {
+        await Auth.ApproveUser(userId); 
+        statusMessage = "User approved successfully";
+        pendingUsers.RemoveAll(u => u.Id == userId);
+    }
+    private async Task Reject(int userId)
+    {
+        await Auth.RejectUser(userId);
+        statusMessage = "User rejected successfully";
+        pendingUsers.RemoveAll(u => u.Id == userId);
+    }
+    private void GoBack()
+    {
+        Nav.NavigateTo("/adminhome");
+    }
+}

@@ -1,0 +1,48 @@
+﻿@page "/feedbacks"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using SkillExchange.Blazor.Models
+@using SkillExchange.Blazor.Services
+@inject FeedbackService FeedbackService
+@inject ContentService ContentService
+@inject AuthService AuthService
+<h3 class="page-title">User Feedbacks</h3>
+<MudTable Items="feedbacks" Dense="true" Hover="true" Class="feedback-table">
+    <HeaderContent>
+        <MudTh>Course</MudTh>
+        <MudTh>User</MudTh>
+        <MudTh>Rating</MudTh>
+        <MudTh>Comment</MudTh>
+        <MudTh>Date</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Course">
+            @contents?.FirstOrDefault(c => c.Id == context.ContentId)?.Title
+        </MudTd>
+        <MudTd DataLabel="User">
+            @users?.FirstOrDefault(u => u.Id == context.UserId)?.Name
+        </MudTd>
+        <MudTd DataLabel="Rating">@context.Rating ★</MudTd>
+        <MudTd DataLabel="Comment">@context.Comment</MudTd>
+        <MudTd DataLabel="Date">@context.CreatedAt.ToString("dd MMM yyyy")</MudTd>
+    </RowTemplate>
+</MudTable>
+@code {
+    private List<FeedbackResponse> feedbacks = new();
+    private List<Content> contents = new();
+    private List<User> users = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            feedbacks = await FeedbackService.GetAllFeedbacksAsync();
+            contents = await ContentService.GetAllContentsAsync();
+            users = await AuthService.GetAllUsersAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading feedbacks: {ex.Message}");
+        }
+    }
+}

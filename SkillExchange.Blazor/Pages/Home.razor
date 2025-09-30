@@ -1,0 +1,32 @@
+﻿@page "/home"
+@inject NavigationManager Nav
+
+<div class="home-container">
+    <div class="home-card-wrapper">
+        <h1>Welcome to Skill Exchange</h1>
+        <p>Learn, Share, and Grow Your Skills</p>
+        <div class="cards">
+            <div class="card user-card" @onclick="@(() => Navigate(true))">
+                <span class="material-icons card-icon">🧞‍♀️</span>
+                <h3>User</h3>
+                <p>Access courses, learn skills, and track progress.</p>
+                <button class="card-button">Go to User Login</button>
+            </div>
+            <div class="card admin-card" @onclick="@(() => Navigate(false))">
+                <span class="material-icons card-icon">🗣</span>
+                <h3>Admin</h3>
+                <p>Manage content, approve users, and monitor activity.</p>
+                <button class="card-button">Go to Admin Login</button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    private void Navigate(bool isUser)
+    {
+        if (isUser)
+            Nav.NavigateTo("/login");
+        else
+            Nav.NavigateTo("/adminlogin");
+    }
+}

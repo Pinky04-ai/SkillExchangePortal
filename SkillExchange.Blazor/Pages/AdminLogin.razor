@@ -1,0 +1,49 @@
+﻿@page "/adminlogin"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using SkillExchange.Blazor.Services
+@inject NavigationManager Nav
+@inject AuthService Auth
+
+<div class="admin-login-container">
+    <MudPaper Class="login-card">
+        <MudText Typo="Typo.h1" Align="Align.Center" Class="login-title"Style="font-size:large"> Admin Login</MudText>
+
+        <MudTextField @bind-Value="email" Label="Email" Variant="Variant.Outlined" FullWidth="true" Class="login-input" />
+        <MudTextField @bind-Value="password" Label="Password" InputType="InputType.Password" Variant="Variant.Outlined" FullWidth="true" Class="login-input" />
+
+        <MudButton OnClick="Login" Variant="Variant.Filled" style="background-color:white;color:black" FullWidth="true" Class="login-button">
+            Login
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" style="background-color:white;color:black" FullWidth="true" OnClick="@GoTo">
+            Admin Home 
+        </MudButton>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <MudText Class="error-message">@errorMessage</MudText>
+        }
+    </MudPaper>
+</div>
+@code {
+    private string email = string.Empty;
+    private string password = string.Empty;
+    private string? errorMessage;
+
+    private async Task Login()
+    {
+        var isAdmin = await Auth.AdminLogin(email, password);
+        if (isAdmin)
+        {
+            errorMessage = "Login Succesfull";
+        }
+        else
+        {
+            errorMessage = "❌ Invalid admin credentials.";
+        }
+    }
+    private void GoTo()
+    {
+        Nav.NavigateTo("/adminhome");
+    }
+}

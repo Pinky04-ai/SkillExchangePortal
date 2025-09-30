@@ -1,0 +1,99 @@
+﻿@page "/explore"
+@using SkillExchange.Blazor.Models
+@using SkillExchange.Blazor.Services
+@inject ContentService ContentService
+@inject NavigationManager Nav
+
+<h3 class="page-title mb-4">Explore Courses & Skills</h3>
+
+<MudPaper Class="p-4 mb-4 d-flex justify-between align-center">
+    <MudTextField @bind-Value="searchTerm" Placeholder="Search content..."
+                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                  Class="mr-3" />
+    <h6 class="mr-2">Filter by Category</h6>
+    <select @bind="selectedCategory" class="form-select mr-3">
+        <option value="">All</option>
+        <option value="Programming">Programming</option>
+        <option value="Design">Design</option>
+        <option value="Marketing">Marketing</option>
+    </select>
+    <MudButton Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Primary" OnClick="@GoToAddContent">
+        + Add Content
+    </MudButton>
+</MudPaper>
+<MudGrid Class="mt-4">
+    @if (contents == null)
+    {
+        <MudItem xs="12">
+            <MudProgressCircular Indeterminate="true" />
+        </MudItem>
+    }
+    else if (!contentsFiltered.Any())
+    {
+        <MudItem xs="12">
+            <p>No content found.</p>
+        </MudItem>
+    }
+    else
+    {
+        @foreach (var item in contentsFiltered)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                         @onclick="() => ViewContent(item)">
+                    <MudCardMedia Image="@item.ImageUrl"/>
+                    <MudCardContent>
+                        <h5>@item.Title</h5>
+                        <p class="text-muted">@item.Category</p>
+                        <p>@item.Description</p>
+                        <p><strong>Avg. Rating:</strong> @item.AverageRating.ToString("0.0") ⭐</p>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    }
+</MudGrid>
+@code {
+    private List<Content>? contents;
+    private string searchTerm = "";
+    private string selectedCategory = "";
+    private string selectedRating = "";
+    private List<string> categories = new List<string>();
+    private List<Content> contentsFiltered => contents?
+        .Where(c =>
+            (string.IsNullOrEmpty(searchTerm) || c.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(selectedCategory) || c.Category == selectedCategory) &&
+            (string.IsNullOrEmpty(selectedRating) || c.AverageRating >= ParseRating(selectedRating))
+
+        )
+        .ToList() ?? new List<Content>();
+    protected override async Task OnInitializedAsync()
+    {
+        contents = await ContentService.GetAllContentsAsync();
+
+        if (contents != null)
+        {
+            categories = contents.Select(c => c.Category).Distinct().ToList();
+        }
+    }
+    private double ParseRating(string rating)
+    {
+        return rating switch
+        {
+            "5" => 5.0, 
+            "4" => 4.0,
+            "3" => 3.0
+            
+        };
+    }
+    private void ViewContent(Content item)
+    {
+        Nav.NavigateTo($"/content/{item.Id}");
+    }
+    private void GoToAddContent()
+    {
+        Nav.NavigateTo("/addcontent");
+    }
+}
+
+

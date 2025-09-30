@@ -1,0 +1,92 @@
+﻿@page "/addcontent"
+@using SkillExchange.Core.DTO
+@using SkillExchange.Blazor.Services
+@inject ContentService ContentService
+@inject NavigationManager Nav
+
+<MudPaper Class="p-6 mx-auto" Style="max-width:600px;">
+    <MudText Typo="Typo.h5" Class="mb-4">Upload New Content</MudText>
+    <MudTextField @bind-Value="title" Label="Title" Required="true" />
+    <MudTextField @bind-Value="description" Label="Description" Lines="3" Class="mt-3" />
+    <MudTextField @bind-Value="uploaderId" Label="Uploader ID" Required="true" Class="mt-3" />
+    <label for="category">Category</label>
+    <select id="category" class="form-control" @bind="categoryId">
+        <option value="1">Programming</option>
+        <option value="2">Design</option>
+        <option value="4">Marketing</option>
+        <option value="5">Human Resource</option>
+        <option value="7">CEO</option>
+        <option value="8">AI Development</option>
+    </select>
+    <label for="contentType">Content Type</label>
+    <select id="contentType" class="form-control" @bind="contentType">
+        <option value="video">Video</option>
+        <option value="image">Image</option>
+        <option value="document">Document</option>
+    </select>
+    <InputFile OnChange="OnFileChange" Class="mt-3" />
+    <button class="btn btn-primary mt-4" @onclick="SubmitAsync" disabled="@isSubmitting">
+        @(isSubmitting ? "Uploading..." : "Upload")
+    </button>
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <MudText Class="mt-2" Color="Color.Error">@message</MudText>
+    }
+</MudPaper>
+@code {
+    private string title;
+    private string description;
+    private int uploaderId;
+    private int categoryId;
+    private string contentType = "video";
+    private IBrowserFile selectedFile;
+    private bool isSubmitting = false;
+    private string message;
+    private void OnFileChange(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+    private List<CategoryDTO> categories = new()
+    {
+        new CategoryDTO(1, "Programming"),
+        new CategoryDTO(2, "Design"),
+        new CategoryDTO(4, "Marketing"),
+        new CategoryDTO(5, "Human Resource"),
+        new CategoryDTO(7, "CEO"),
+        new CategoryDTO(8, "AI Development")
+    };
+    private async Task SubmitAsync()
+    {
+        if (selectedFile == null)
+        {
+            message = "Please select a file.";
+            return;
+        }
+        isSubmitting = true;
+        message = string.Empty;
+        try
+        {
+            var dto = new CreateContentDTO
+            {
+                Title = title,
+                Description = description,
+                CategoryId = categoryId,
+                ContentType = contentType,
+                UploadedById = uploaderId
+               
+            };
+            using var stream = selectedFile.OpenReadStream(200 * 1024 * 1024); 
+            var contentDto = await ContentService.CreateAsync(dto, selectedFile); 
+
+            Nav.NavigateTo("/explore"); 
+        }
+        catch (Exception ex)
+        {
+            message = ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}

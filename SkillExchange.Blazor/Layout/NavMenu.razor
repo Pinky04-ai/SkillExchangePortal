@@ -1,0 +1,31 @@
+﻿@using SkillExchange.Blazor.Services
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">SkillExchangePortal</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+<div class="sidebar">
+    <nav>
+        <ul class="nav-list">
+            <li><NavLink href="/home" Match="NavLinkMatch.All"> Home</NavLink></li>
+            <li><NavLink href="/login"> Login</NavLink></li>
+            <li><NavLink href="/register"> Register</NavLink></li>
+            <li><NavLink href="/adminlogin"> Admin Login</NavLink></li>
+
+        </ul>
+    </nav>
+</div>
+@code {
+    
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}
